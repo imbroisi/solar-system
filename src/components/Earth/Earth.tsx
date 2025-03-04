@@ -23,6 +23,7 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
   const oscillationSpeed = 0.1; // Speed of oscillation
   const maxInclination = 23.5 * (Math.PI / 180); // Convert degrees to radians
   const time = useRef(0);
+  const lastSeason = useRef('');
 
   const poleGeometry = useMemo(() => (
     <cylinderGeometry args={[0.02, 0.02, 0.4, 32]} />
@@ -66,17 +67,15 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
       const newAngle = -(time.current * oscillationSpeed + Math.PI / 2);
       setAngle(newAngle);
 
-      const { month, day } = getSeasonAndDate(newAngle);
+      const { season } = getSeasonAndDate(newAngle);
+
+      // console.log("===>>> lastSeason.current", lastSeason.current, season)
       
-      if (
-        freeze && (
-        (month === 'March' && day === 22) ||
-        (month === 'June' && day === 21) ||
-        (month === 'September' && day === 23) ||
-        (month === 'December' && day === 21)
-      )) {
+      if (freeze && lastSeason.current !== season) {
         return;
       }
+      
+      lastSeason.current = season;
     }
 
 

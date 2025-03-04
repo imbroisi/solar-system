@@ -17,34 +17,65 @@ const ANGLE = 0;
 const a = 1000000000000;
 const b = a * Math.sin(Math.PI * ANGLE / 180);
 
+function getDayOfYear(date: any) {
+  const startOfYear: any = new Date(date.getFullYear(), 0, 0); // January 0 (December 31 of previous year)
+  const diff = date - startOfYear; // Difference in milliseconds
+  const oneDay = 1000 * 60 * 60 * 24; // Milliseconds in one day
+  return Math.floor(diff / oneDay); // Convert to days
+}
+
 const getSeasonAndDate = (angle: any) => {
   // Normalize angle to [0, 2π]
   const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
 
-  // Determine season based on Earth's position
-  let season;
-  if (normalizedAngle >= Math.PI && normalizedAngle < Math.PI * 1.5) {
-    season = 'Fall';    // Left side of the Sun
-  } else if (normalizedAngle >= Math.PI * 1.5) {
-    season = 'Summer';    // In front of the Sun
-  } else if (normalizedAngle >= Math.PI * 0.5 && normalizedAngle < Math.PI) {
-    season = 'Winter';      // Behind the Sun
-  } else {
-    season = 'Spring';    // Right side of the Sun
-  }
+  console.log("==>>> angle, normalizedAngle", angle, normalizedAngle)
 
   // Calculate the date based on the angle
-  const daysInYear = 365;
+  const daysInYear = 365.5;
   const daysPerRadian = daysInYear / (Math.PI * 2);
   const daysSinceSpring = normalizedAngle * daysPerRadian;
 
   // Start from March 22 (first day of spring)
-  const startDate = new Date(2023, 5, 22); // March 22, 2023
+  const startDate = new Date(2023, 5, 21); // March 22, 2023
   const currentDate = new Date(startDate);
-  currentDate.setDate(startDate.getDate() - Math.floor(daysSinceSpring));
+  currentDate.setDate(startDate.getDate() - Math.round(daysSinceSpring) + 2);
 
   const month = currentDate.toLocaleString('default', { month: 'long' });
   const day = currentDate.getDate();
+
+
+  // console.log("--->>> currentDate", currentDate)
+
+    // Determine season based on Earth's position
+    // let season;
+    // if (normalizedAngle >= Math.PI && normalizedAngle < Math.PI * 1.5) {
+    //   season = 'Fall';    // Left side of the Sun
+    // } else if (normalizedAngle >= Math.PI * 1.5) {
+    //   season = 'Summer';    // In front of the Sun
+    // } else if (normalizedAngle >= Math.PI * 0.5 && normalizedAngle < Math.PI) {
+    //   season = 'Winter';      // Behind the Sun
+    // } else {
+    //   season = 'Spring';    // Right side of the Sun
+    // }
+
+  let season = 'Winter';
+  const monthDay = getDayOfYear(currentDate)
+
+  if (monthDay > 79) {
+    season = "Sprint";
+  }
+
+  if (monthDay > 170) {
+    season = "Summer";
+  }
+
+  if (monthDay > 265) {
+    season = "Fall";
+  }
+
+  if (monthDay > 354) {
+    season = "Winter";
+  }
 
   return { season, month, day };
 };
@@ -102,7 +133,7 @@ function MainCanvas(props: any) {
     if (inclinationRef.current < -23) {
       return '-23.5°';
     }
-    return `${(Math.floor(inclinationRef.current))}.0°`;
+    return `${(Math.round(inclinationRef.current - 0.8))}.0°`;
   }
 
   useFrame(() => {
