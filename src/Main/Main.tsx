@@ -4,9 +4,7 @@ import { Suspense, useRef, useState } from 'react';
 import { OrbitControls, Text } from '@react-three/drei';
 import { TextureLoader } from 'three';
 import sunTexture from './sun_texture.jpg';
-
-
-import Earth from '../components/Earth';
+import Earth, { EARTH_SIZE } from '../components/Earth/Earth';
 import Sky from '../components/Sky';
 
 import { Group } from 'three';
@@ -28,8 +26,6 @@ const getSeasonAndDate = (angle: any) => {
   // Normalize angle to [0, 2π]
   const normalizedAngle = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
 
-  console.log("==>>> angle, normalizedAngle", angle, normalizedAngle)
-
   // Calculate the date based on the angle
   const daysInYear = 365.5;
   const daysPerRadian = daysInYear / (Math.PI * 2);
@@ -42,21 +38,6 @@ const getSeasonAndDate = (angle: any) => {
 
   const month = currentDate.toLocaleString('default', { month: 'long' });
   const day = currentDate.getDate();
-
-
-  // console.log("--->>> currentDate", currentDate)
-
-    // Determine season based on Earth's position
-    // let season;
-    // if (normalizedAngle >= Math.PI && normalizedAngle < Math.PI * 1.5) {
-    //   season = 'Fall';    // Left side of the Sun
-    // } else if (normalizedAngle >= Math.PI * 1.5) {
-    //   season = 'Summer';    // In front of the Sun
-    // } else if (normalizedAngle >= Math.PI * 0.5 && normalizedAngle < Math.PI) {
-    //   season = 'Winter';      // Behind the Sun
-    // } else {
-    //   season = 'Spring';    // Right side of the Sun
-    // }
 
   let season = 'Winter';
   const monthDay = getDayOfYear(currentDate)
@@ -87,7 +68,7 @@ function SeasonOverlay({ angle }: any) {
     <div
       style={{
         position: 'absolute',
-        top: 10, // Adjust as needed
+        top: 30,
         left: '50%',
         transform: 'translateX(-50%)',
         color: 'white',
@@ -165,7 +146,7 @@ function MainCanvas(props: any) {
       />
       <Text
         ref={textRef}
-        position={[0, 1.5, 0.2]} // Position the text above the Earth
+        position={[0, EARTH_SIZE + .5, 0.2]} // Position the text above the Earth
         rotation={[0, -Math.PI / 2, 0]} // Rotate the text to lie in the X-Y plane
         fontSize={0.2} // Adjust the font size as needed
         color="#ffffff" // Text color
@@ -205,8 +186,6 @@ const Main = (props: MainProps) => {
   const [showHelpers, setShowHelpers] = useState(true);
   const [freeze, setFreeze] = useState(false);
   const [angle, setAngle] = useState(null);
-
-  // console.log('angle', angle);
 
   return (
     <Container>

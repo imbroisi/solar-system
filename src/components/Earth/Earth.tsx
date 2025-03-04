@@ -11,6 +11,7 @@ export interface EarthProps {
 }
 
 const EARTH_ROTATION_SPEED = 0.02;
+export const EARTH_SIZE = 1.2;
 
 const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate }: any) => {
   const earthMap = useLoader(TextureLoader, earthTexture);
@@ -34,7 +35,7 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
   ), []);
 
   const equatorGeometry = useMemo(() => (
-    <torusGeometry args={[1.01, 0.01, 16, 100]} />
+    <torusGeometry args={[EARTH_SIZE + 0.01, 0.01, 16, 100]} />
   ), []);
 
   const equatorMaterial = useMemo(() => (
@@ -43,11 +44,6 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
 
   useFrame(({ clock }, delta) => {
     const inclination = maxInclination * Math.sin(oscillationSpeed * time.current);
-    // const time = clock.getElapsedTime();
-
-
-    // const inclination = maxInclination * Math.sin(oscillationSpeed * time.current);
-
 
     setInclination(inclination * (180 / Math.PI)); // Convert radians to degrees
     if (earthRef.current) {
@@ -58,35 +54,27 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
       cloudsRef.current.rotation.x = inclination; // Oscillate in the X-axis
       cloudsRef.current.rotation.y += EARTH_ROTATION_SPEED; // Adjust the rotation speed as needed
     }
-    // if (equatorRef.current) {
-    //   equatorRef.current.rotation.x = inclination; // Oscillate in the X-axis
-    //   equatorRef.current.rotation.y += 0.01; // Adjust the rotation speed as needed
-    // }
 
     if (earthRef.current) {
       const newAngle = -(time.current * oscillationSpeed + Math.PI / 2);
       setAngle(newAngle);
 
       const { season } = getSeasonAndDate(newAngle);
-
-      // console.log("===>>> lastSeason.current", lastSeason.current, season)
       
       if (freeze && lastSeason.current !== season) {
         return;
       }
-      
+
       lastSeason.current = season;
     }
 
-
     time.current += oscillationSpeed;
-
   });
 
   return (
     <>
       <mesh ref={earthRef} rotation={[0, 0, 0]}>
-        <sphereGeometry args={[1, 32, 32]} />
+        <sphereGeometry args={[EARTH_SIZE, 32, 32]} />
         <meshStandardMaterial
           map={earthMap}
           bumpMap={bumpMap}
@@ -95,7 +83,7 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
         />
         {/* North Pole Pin */}
         {showHelpers && (
-          <mesh position={[0, 1.05, 0]}>
+          <mesh position={[0, EARTH_SIZE + 0.05, 0]}>
             {poleGeometry}
             {poleMaterial}
           </mesh>
@@ -103,7 +91,7 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
 
         {/* South Pole Pin */}
         {showHelpers && (
-          <mesh position={[0, -1.05, 0]}>
+          <mesh position={[0, -(EARTH_SIZE + 0.05), 0]}>
             {poleGeometry}
             {poleMaterial}
           </mesh>
@@ -119,8 +107,8 @@ const Earth = ({ showHelpers, setInclination, setAngle, freeze, getSeasonAndDate
       </mesh>
 
       <mesh ref={cloudsRef} rotation={[0, 0, 0]}>
-        <sphereGeometry args={[1.01, 32, 32]} /> {/* Slightly larger than the Earth sphere */}
-        <meshStandardMaterial map={cloudsMap} transparent={true} opacity={0.8} />
+        <sphereGeometry args={[EARTH_SIZE + 0.01, 32, 32]} /> {/* Slightly larger than the Earth sphere */}
+        <meshStandardMaterial map={cloudsMap} transparent={true} opacity={1} />
       </mesh>
     </>
   );
