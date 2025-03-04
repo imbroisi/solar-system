@@ -130,30 +130,32 @@ function MainCanvas(props: any) {
   return (
     <>
       <group ref={sceneRef} rotation={[0, Math.PI / 2, 0]}> Rotate the entire scene 90 degrees around the X-axis
-      <ambientLight color={0xffffff} intensity={0.2} />
-      <directionalLight
-        color={0xffffff}
-        intensity={0.3}
-        position={[a, b, a]}
-      />
-      <Sun />
-      <Earth
-        setInclination={setInclination}
-        showHelpers={props.showHelpers}
-        setAngle={props.setAngle}
-        freeze={props.freeze}
-        getSeasonAndDate={getSeasonAndDate}
-      />
-      <Text
-        ref={textRef}
-        position={[0, EARTH_SIZE + .5, 0.2]} // Position the text above the Earth
-        rotation={[0, -Math.PI / 2, 0]} // Rotate the text to lie in the X-Y plane
-        fontSize={0.2} // Adjust the font size as needed
-        color="#ffffff" // Text color
-        anchorX="right" // Anchor the text horizontally to the center
-        anchorY="middle" // Anchor the text vertically to the middle
-      > </Text>
-      {/* <OrbitControls /> */}
+        <ambientLight color={0xffffff} intensity={0.2} />
+        <directionalLight
+          color={0xffffff}
+          intensity={0.3}
+          position={[a, b, a]}
+        />
+        <Sun />
+        <Earth
+          setInclination={setInclination}
+          showHelpers={props.showHelpers}
+          setAngle={props.setAngle}
+          freeze={props.freeze}
+          getSeasonAndDate={getSeasonAndDate}
+        />
+        {props.showHelpers && (
+          <Text
+            ref={textRef}
+            position={[0, EARTH_SIZE + .5, 0.2]} // Position the text above the Earth
+            rotation={[0, -Math.PI / 2, 0]} // Rotate the text to lie in the X-Y plane
+            fontSize={0.2} // Adjust the font size as needed
+            color="#ffffff" // Text color
+            anchorX="right" // Anchor the text horizontally to the center
+            anchorY="middle" // Anchor the text vertically to the middle
+          > </Text>
+        )}
+        {/* <OrbitControls /> */}
       </group>
     </>
   );
@@ -162,29 +164,33 @@ function MainCanvas(props: any) {
 const ControlPanel = ({ showHelpers, setShowHelpers, freeze, setFreeze }: any) => {
   return (
     <div style={{ position: 'absolute', top: 0, left: 0, padding: 10 }}>
-      <label>
-        <input
-          type="checkbox"
-          checked={freeze}
-          onChange={() => setFreeze(!freeze)}
-        />
-        Freeze
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={showHelpers}
-          onChange={() => setShowHelpers(!showHelpers)}
-        />
-        Show Helpers
-      </label>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={showHelpers}
+            onChange={() => setShowHelpers(!showHelpers)}
+          />
+          Show Helpers
+        </label>
+      </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={freeze}
+            onChange={() => setFreeze(!freeze)}
+          />
+          Freeze
+        </label>
+      </div>
     </div>
   );
 };
 
 const Main = (props: MainProps) => {
-  const [showHelpers, setShowHelpers] = useState(true);
-  const [freeze, setFreeze] = useState(false);
+  const [showHelpers, setShowHelpers] = useState(false);
+  const [freeze, setFreeze] = useState(true);
   const [angle, setAngle] = useState(null);
 
   return (
@@ -193,9 +199,9 @@ const Main = (props: MainProps) => {
       <Canvas camera={{ far: 10000 }}>
         {/* <Suspense fallback={null}> */}
         <MainCanvas
-          {...props} 
-          showHelpers={showHelpers} 
-          setAngle={setAngle} 
+          {...props}
+          showHelpers={showHelpers}
+          setAngle={setAngle}
           freeze={freeze}
         />;
         {/* </Suspense> */}
